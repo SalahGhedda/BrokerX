@@ -25,6 +25,7 @@ jobs:
 
       - name: Build & Test with Maven
         run: mvn clean verify
+
   deploy:
     runs-on: self-hosted
     needs: build
