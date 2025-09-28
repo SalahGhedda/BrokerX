@@ -1,0 +1,22 @@
+# Maven target directory
+/target/
+
+# Compiled class files
+*.class
+
+# Logs
+*.log
+
+# IDE / VS Code
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven / build metadata
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
