@@ -1,14 +1,16 @@
-version: '3.9'
+version: "3.8"
 services:
-  db:
-    image: postgres:16
+  brokerx-db:
+    image: postgres:15
+    container_name: brokerx-db
     environment:
       POSTGRES_USER: brokerx
       POSTGRES_PASSWORD: brokerx
-      POSTGRES_DB: brokerx
-    ports: ["5432:5432"]
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "brokerx"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      POSTGRES_DB: brokerx_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - brokerx-data:/var/lib/postgresql/data
+
+volumes:
+  brokerx-data:
