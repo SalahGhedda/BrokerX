@@ -1,11 +1,16 @@
 package com.brokerx.integration;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import java.math.BigDecimal;
 
-import com.brokerx.application.*;
-import com.brokerx.adapters.persistence.memory.*;
-import com.brokerx.adapters.external.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import com.brokerx.adapters.external.PaymentAdapterMock;
+import com.brokerx.adapters.persistence.memory.InMemoryAccountRepository;
+import com.brokerx.adapters.persistence.memory.InMemoryTransactionRepository;
+import com.brokerx.adapters.persistence.memory.InMemoryWalletRepository;
+import com.brokerx.application.AuthService;
+import com.brokerx.application.WalletService;
 
 public class SignupAndDepositFlowTest {
 
@@ -24,7 +29,7 @@ public class SignupAndDepositFlowTest {
 
         var tx = walletService.deposit(accountId, "KEY-1", 250.0);
 
-        assertEquals(250.0, tx.getAmount());
+        assertEquals(BigDecimal.valueOf(250.0), tx.getAmount());
         assertEquals("SETTLED", tx.getState());
     }
 }
