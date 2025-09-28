@@ -5,28 +5,47 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build & Test with Maven
+        run: mvn clean verify
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
     steps:
       - name: Préparer le repo sur la VM
         run: |
           cd ~
           if [ ! -d "brokerx" ]; then
             echo "Clonage initial du repo..."
-            git clone https://github.com/SalahGhedda/BrokerX.git
+            git clone https://github.com/<TON-USER>/<TON-REPO>.git brokerx
           fi
-          cd brokerx
+          cd ~/brokerx
           echo "Mise à jour du repo..."
-          git reset --hard
+          git fetch origin
+          git reset --hard origin/main
           git clean -fd
-          git pull origin main
 
-      - name: Build Maven et reconstruire l'image Docker
+      - name: Build et rebuild l'image Docker
         run: |
           cd ~/brokerx
           mvn clean package -DskipTests
           docker rm -f brokerx || true
           docker rmi brokerx:latest || true
           docker build -t brokerx:latest .
+
+      - name: Fin du déploiement
+        run: echo "Déploiement terminé - l'image est prête dans Docker."
 
 
