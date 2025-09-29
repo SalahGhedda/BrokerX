@@ -13,7 +13,7 @@ public class Transaction {
     private String idempotencyKey;
     private Instant occurredAt;
 
-    private Transaction(UUID id, UUID walletId, BigDecimal amount, String type,
+    public Transaction(UUID id, UUID walletId, BigDecimal amount, String type,
                         String state, String idempotencyKey, Instant occurredAt) {
         this.id = id;
         this.walletId = walletId;
@@ -40,4 +40,6 @@ public class Transaction {
     public String getState() { return state; }
     public String getIdempotencyKey() { return idempotencyKey; }
     public Instant getOccurredAt() { return occurredAt; }
+
+    public void setState(String state) { this.state = state; }
 }

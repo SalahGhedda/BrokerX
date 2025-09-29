@@ -6,7 +6,7 @@ public class UserAccount {
     private UUID id;
     private String email;
     private String passwordHash;
-    private AccountState state; // PENDING, ACTIVE, SUSPENDED
+    private AccountState state; // PENDING, ACTIVE, SUSPENDED,
 
     public UserAccount(UUID id, String email, String passwordHash, AccountState state) {
         this.id = id;
@@ -20,4 +20,6 @@ public class UserAccount {
     public String getPasswordHash() { return passwordHash; }
     public AccountState getState() { return state; }
     public void setState(AccountState state) { this.state = state; }
+    public void deactivate() {this.state = AccountState.SUSPENDED;}
+    public void reactivate() {this.state = AccountState.ACTIVE;}
 }
