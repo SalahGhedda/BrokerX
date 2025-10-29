@@ -1,0 +1,436 @@
+openapi: 3.0.3
+info:
+  title: BrokerX REST API
+  version: "1.0.0"
+  description: |
+    Prototype REST interface for BrokerX phase 2/4. All endpoints return JSON with a wrapper structure `{ "data": ... }`
+    and a normalized error payload on failure. Authentication uses Bearer tokens obtained from the login endpoint.
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /auth/tokens:
+    post:
+      summary: Authenticate and obtain a bearer token
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '201':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseEnvelope'
+        '401':
+          description: Invalid credentials
+  /auth/tokens/current:
+    delete:
+      summary: Revoke the current bearer token
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Token revoked
+  /accounts:
+    post:
+      summary: Create a retail account
+      tags: [Accounts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupResponseEnvelope'
+  /accounts/{accountId}/confirmations:
+    post:
+      summary: Confirm account activation using verification code
+      tags: [Accounts]
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmAccountRequest'
+      responses:
+        '204':
+          description: Account confirmed
+  /accounts/{accountId}/summary:
+    get:
+      summary: Retrieve balances and followed stocks for the account
+      tags: [Accounts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Account summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSummaryEnvelope'
+  /accounts/{accountId}/wallet/deposits:
+    post:
+      summary: Simulate a deposit using idempotency key semantics
+      tags: [Wallet]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositRequest'
+      responses:
+        '201':
+          description: Deposit accepted
+  /accounts/{accountId}/stocks/follow:
+    post:
+      summary: Follow a stock
+      tags: [Stocks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FollowRequest'
+      responses:
+        '204': { description: Followed }
+  /accounts/{accountId}/stocks/unfollow/{stockId}:
+    delete:
+      summary: Unfollow a stock
+      tags: [Stocks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/StockId'
+      responses:
+        '204': { description: Unfollowed }
+  /accounts/{accountId}/orders:
+    get:
+      summary: List orders belonging to the account
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Orders listed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersEnvelope'
+    post:
+      summary: Place a market or limit order
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        '201':
+          description: Order accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderEnvelope'
+  /accounts/{accountId}/orders/{orderId}/cancel:
+    post:
+      summary: Cancel a pending order
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderEnvelope'
+  /accounts/{accountId}/notifications:
+    get:
+      summary: Fetch latest account notifications
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Notifications list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationsEnvelope'
+    delete:
+      summary: Clear notification backlog for the account
+      tags: [Notifications]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '204': { description: Cleared }
+  /stocks:
+    get:
+      summary: List tradable stocks with latest quotes
+      tags: [Stocks]
+      responses:
+        '200':
+          description: Stocks list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StocksEnvelope'
+  /stocks/{stockId}:
+    get:
+      summary: Get quote details for a specific stock
+      tags: [Stocks]
+      parameters:
+        - $ref: '#/components/parameters/StockId'
+      responses:
+        '200':
+          description: Stock details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockEnvelope'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    AccountId:
+      name: accountId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    StockId:
+      name: stockId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        data:
+          type: object
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    LoginResponseEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+      properties:
+        data:
+          $ref: '#/components/schemas/LoginResponse'
+    LoginResponse:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+        email:
+          type: string
+        state:
+          type: string
+          enum: [PENDING, ACTIVE, REJECTED]
+        token:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+    SignupRequest:
+      type: object
+      required: [email, phone, password, fullName, addressLine, dateOfBirth]
+      properties:
+        email: { type: string, format: email }
+        phone: { type: string }
+        password: { type: string, minLength: 6 }
+        fullName: { type: string }
+        addressLine: { type: string }
+        dateOfBirth: { type: string, format: date }
+    SignupResponseEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+      properties:
+        data:
+          type: object
+          properties:
+            accountId: { type: string, format: uuid }
+            email: { type: string }
+            verificationCode: { type: string }
+            expiresAt: { type: string, format: date-time }
+    ConfirmAccountRequest:
+      type: object
+      required: [verificationCode]
+      properties:
+        verificationCode: { type: string }
+    AccountSummaryEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+      properties:
+        data:
+          type: object
+          properties:
+            accountId: { type: string, format: uuid }
+            email: { type: string }
+            state: { type: string }
+            balance: { type: number, format: double }
+            followed:
+              type: array
+              items:
+                $ref: '#/components/schemas/FollowedStock'
+    FollowedStock:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        symbol: { type: string }
+        name: { type: string }
+        price: { type: number, format: double }
+        updatedAt: { type: string, format: date-time }
+    DepositRequest:
+      type: object
+      required: [amount, idempotencyKey]
+      properties:
+        amount: { type: number, format: double }
+        idempotencyKey: { type: string }
+    FollowRequest:
+      type: object
+      required: [stockId]
+      properties:
+        stockId: { type: string, format: uuid }
+    OrderRequest:
+      type: object
+      required: [symbol, side, type, quantity]
+      properties:
+        symbol: { type: string }
+        side: { type: string, enum: [BUY] }
+        type: { type: string, enum: [MARKET, LIMIT] }
+        quantity: { type: integer, minimum: 1 }
+        limitPrice: { type: number, format: double }
+        clientOrderId: { type: string }
+    OrderEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+      properties:
+        data:
+          $ref: '#/components/schemas/OrderResponse'
+    OrdersEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+      properties:
+        data:
+          type: object
+          properties:
+            orders:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderResponse'
+    OrderResponse:
+      type: object
+      properties:
+        orderId: { type: string, format: uuid }
+        stockId: { type: string, format: uuid }
+        symbol: { type: string }
+        type: { type: string }
+        side: { type: string }
+        quantity: { type: integer }
+        limitPrice: { type: number, format: double, nullable: true }
+        executedPrice: { type: number, format: double, nullable: true }
+        notional: { type: number, format: double, nullable: true }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        executedAt: { type: string, format: date-time, nullable: true }
+        failureReason: { type: string, nullable: true }
+    NotificationsEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+      properties:
+        data:
+          type: object
+          properties:
+            notifications:
+              type: array
+              items:
+                $ref: '#/components/schemas/NotificationResponse'
+    NotificationResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        category: { type: string }
+        message: { type: string }
+        referenceId: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        payload: { type: string, nullable: true }
+    StocksEnvelope:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FollowedStock'
+    StockEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+      properties:
+        data:
+          $ref: '#/components/schemas/FollowedStock'

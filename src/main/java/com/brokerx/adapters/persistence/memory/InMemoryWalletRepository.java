@@ -11,14 +11,22 @@ import com.brokerx.ports.WalletRepository;
 public class InMemoryWalletRepository implements WalletRepository {
     private final Map<UUID, Wallet> wallets = new HashMap<>();
 
+    @Override
     public Optional<Wallet> findByOwnerId(UUID ownerId) {
         return wallets.values().stream()
                 .filter(w -> w.getOwnerId().equals(ownerId))
                 .findFirst();
     }
+
+    @Override
     public Wallet create(UUID ownerId) {
         var wallet = new Wallet(UUID.randomUUID(), ownerId);
         wallets.put(wallet.getId(), wallet);
         return wallet;
+    }
+
+    @Override
+    public void update(Wallet wallet) {
+        wallets.put(wallet.getId(), wallet);
     }
 }

@@ -6,6 +6,8 @@ import com.brokerx.domain.account.UserAccount;
 
 public interface AccountRepository {
     Optional<UserAccount> findByEmail(String email);
+    Optional<UserAccount> findByPhone(String phone);
+    Optional<UserAccount> findById(UUID accountId);
     void save(UserAccount account);
-    void activate(UUID accountId);
+    void update(UserAccount account);
 }

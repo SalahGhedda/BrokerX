@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BrokerX - Validation de compte</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body data-page="confirm">
+    <div class="layout">
+        <header>
+            <h1>BrokerX</h1>
+            <p>Validation d'identite pour activer l'espace investisseur.</p>
+        </header>
+
+        <section class="panel">
+            <div class="section-heading">
+                <h2>Confirmer mon compte</h2>
+                <p>Renseignez l'identifiant et le code de verification transmis par courriel.</p>
+            </div>
+            <form id="confirm-form">
+                <div>
+                    <label for="confirm-accountId">Identifiant compte</label>
+                    <input id="confirm-accountId" name="accountId" type="text" required>
+                </div>
+                <div>
+                    <label for="confirm-code">Code de verification</label>
+                    <input id="confirm-code" name="verificationCode" type="text" required>
+                </div>
+                <button class="primary" type="submit">Valider</button>
+            </form>
+            <p class="auth-secondary">
+                Retourner a la <a href="index.html">connexion</a>
+            </p>
+        </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/assets/app.js" type="module"></script>
+</body>
+</html>

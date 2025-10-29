@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BrokerX - Portail Investisseur</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body data-page="auth">
+    <div class="layout">
+        <header>
+            <h1>BrokerX</h1>
+            <p>Plateforme de courtage pour investisseurs particuliers - prototype monolithique.</p>
+        </header>
+
+        <section id="auth-section" class="panel">
+            <div class="tabs">
+                <button class="tab-button active" data-target="login-panel">Connexion</button>
+                <button class="tab-button" data-target="signup-panel">Creer un compte</button>
+            </div>
+
+            <div id="login-panel" class="auth-panel">
+                <form id="login-form">
+                    <div>
+                        <label for="login-email">Adresse courriel</label>
+                        <input id="login-email" name="email" type="email" autocomplete="email" required>
+                    </div>
+                    <div>
+                        <label for="login-password">Mot de passe</label>
+                        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+                    </div>
+                    <button class="primary" type="submit">Se connecter</button>
+                </form>
+                <p class="auth-secondary">
+                    Besoin d'activer un compte ?
+                    <a id="go-confirm" href="confirm.html">Aller a la validation</a>
+                </p>
+            </div>
+
+            <div id="signup-panel" class="auth-panel hidden">
+                <form id="signup-form">
+                    <div>
+                        <label for="signup-fullname">Nom complet</label>
+                        <input id="signup-fullname" name="fullName" type="text" autocomplete="name" required>
+                    </div>
+                    <div>
+                        <label for="signup-email">Adresse courriel</label>
+                        <input id="signup-email" name="email" type="email" autocomplete="email" required>
+                    </div>
+                    <div>
+                        <label for="signup-phone">Telephone</label>
+                        <input id="signup-phone" name="phone" type="tel" placeholder="+1 514 555 0000" required>
+                    </div>
+                    <div>
+                        <label for="signup-address">Adresse</label>
+                        <input id="signup-address" name="addressLine" type="text" autocomplete="street-address" required>
+                    </div>
+                    <div>
+                        <label for="signup-dob">Date de naissance</label>
+                        <input id="signup-dob" name="dateOfBirth" type="date" required>
+                    </div>
+                    <div>
+                        <label for="signup-password">Mot de passe (>= 6 caracteres)</label>
+                        <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="6" required>
+                    </div>
+                    <button class="primary" type="submit">Creer mon espace</button>
+                </form>
+                <p class="auth-secondary">
+                    Deja inscrit ? <a href="#" data-target="login-panel" class="switch-tab">Se connecter</a>
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/assets/app.js" type="module"></script>
+</body>
+</html>
+
+
+
+
+

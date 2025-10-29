@@ -8,5 +8,6 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=builder /app/target/brokerx-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /app/target/lib ./lib
 
 ENTRYPOINT ["java","-jar","app.jar"]

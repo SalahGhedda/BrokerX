@@ -1,0 +1,30 @@
+```mermaid
+sequenceDiagram
+    participant C as Client Web / SPA
+    participant AuthH as AuthHandler (/auth/tokens)
+    participant AS as AuthService
+    participant AR as AccountRepository
+    participant AAR as AccountAuditRepository
+    participant TS as TokenService
+    participant MFA as NotificationService (OTP)
+
+    C->>AuthH: POST /api/v1/auth/tokens (email,password)
+    AuthH->>AS: authenticate(email,password)
+    AS->>AR: findByEmail(email)
+    alt compte actif
+        AS-->>AuthH: UserAccount
+        AuthH->>MFA: sendOtp(accountId) (optionnel)
+        opt OTP requis
+            MFA-->>C: OTP
+            C->>AuthH: POST /api/v1/auth/tokens/otp (otp)
+        end
+        AuthH->>TS: issue(accountId)
+        TS-->>AuthH: AuthToken(token,expireAt)
+        AuthH->>AAR: append(login_success)
+        AuthH-->>C: HTTP 201 LoginResponse
+    else rejet (401/423)
+        AS-->>AuthH: exception
+        AuthH->>AAR: append(login_failed)
+        AuthH-->>C: HTTP 401/423
+    end
+```

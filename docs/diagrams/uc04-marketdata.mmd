@@ -1,0 +1,30 @@
+```mermaid
+sequenceDiagram
+    participant C as Client Web / SPA
+    participant MH as MarketDataHandler (/stocks)
+    participant SH as SSE Stream Handler
+    participant SS as StockService
+    participant SR as StockRepository
+    participant MDS as MarketDataService
+    participant OS as OrderService
+
+    C->>MH: GET /stocks
+    MH->>SS: listAll()
+    SS->>SR: findAll()
+    loop pour chaque stock
+        SS->>MDS: tickFor(symbol, lastPrice)
+        MDS-->>SS: MarketDataSnapshot
+        SS->>SR: updatePrice(stockId, snapshot)
+        SS->>OS: onMarketTick(stockId, price)
+    end
+    SS-->>MH: quotes
+    MH-->>C: HTTP 200 JSON
+
+    C->>SH: GET /api/v1/stream
+    SH-->>C: 200 text/event-stream
+    loop flux SSE
+        SS->>MDS: tickFor(followedSymbols)
+        SS->>OS: onMarketTick(...)
+        SH-->>C: event: quoteUpdate / notification
+    end
+```

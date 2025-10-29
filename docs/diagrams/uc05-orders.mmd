@@ -1,0 +1,44 @@
+```mermaid
+sequenceDiagram
+    participant C as Client Web / SPA
+    participant OH as OrdersHandler
+    participant OS as OrderService
+    participant TM as TransactionManager
+    participant AS as AuthService
+    participant AR as AccountRepository
+    participant SR as StockRepository
+    participant MDS as MarketDataService
+    participant WS as WalletService
+    participant WR as WalletRepository
+    participant OR as OrderRepository
+    participant PR as PositionRepository
+    participant OAR as OrderAuditRepository
+    participant N as NotificationService
+    participant M as AppMetrics
+
+    C->>OH: POST /orders {symbol, type, qty, limit?}
+    OH->>OS: placeOrder(accountId, command)
+    OS->>TM: inTransaction { ... }
+    TM->>AS: findAccount(accountId)
+    AS->>AR: select account
+    TM->>SR: findBySymbol(symbol)
+    TM->>MDS: tickFor(symbol, lastPrice)
+    TM->>WS: ensureBalance(accountId, notional)
+    alt Exécution immédiate (marché ou limite traversée)
+        TM->>WS: debit(accountId, notional)
+        TM->>OR: save(order COMPLETED)
+        TM->>PR: upsert(position)
+        TM->>OAR: append(ORDER_COMPLETED)
+        TM->>N: notify(order filled)
+    else Limite en attente
+        TM->>WS: hold(reservedNotional)
+        TM->>OR: save(order PENDING)
+        TM->>OAR: append(ORDER_PENDING)
+    end
+    TM-->>OS: OrderResult
+    OS->>M: recordOrder(type,status)
+    OS-->>OH: OrderResult
+    OH-->>C: HTTP 201 OrderResponse
+
+    Note over MDS,OS: Sur tick >= limite, OS.onMarketTick exécute la transition COMPLETED
+```

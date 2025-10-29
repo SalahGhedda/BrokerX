@@ -1,0 +1,161 @@
+{
+  "$schema": "https://www.krakend.io/schema/v3.json",
+  "version": 3,
+  "name": "brokerx-gateway",
+  "port": 9000,
+  "timeout": "4000ms",
+  "output_encoding": "json",
+  "endpoints": [
+    {
+      "endpoint": "/api/orders",
+      "method": "GET",
+      "querystring_params": ["accountId"],
+      "backend": [
+        {
+          "host": [
+            "http://orders-svc:8101",
+            "http://orders-svc-2:8102"
+          ],
+          "url_pattern": "/orders",
+          "encoding": "json"
+        }
+      ],
+      "extra_config": {
+        "qos/ratelimit/router": {
+          "max_rate": 100,
+          "capacity": 150
+        }
+      }
+    },
+    {
+      "endpoint": "/api/orders",
+      "method": "POST",
+      "querystring_params": ["accountId"],
+      "backend": [
+        {
+          "host": [
+            "http://orders-svc:8101",
+            "http://orders-svc-2:8102"
+          ],
+          "url_pattern": "/orders",
+          "encoding": "json"
+        }
+      ],
+      "extra_config": {
+        "qos/ratelimit/router": {
+          "max_rate": 50,
+          "capacity": 75
+        }
+      }
+    },
+    {
+      "endpoint": "/api/orders/{orderId}/cancel",
+      "method": "POST",
+      "querystring_params": ["accountId"],
+      "backend": [
+        {
+          "host": [
+            "http://orders-svc:8101",
+            "http://orders-svc-2:8102"
+          ],
+          "url_pattern": "/orders/{orderId}/cancel",
+          "encoding": "json"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/accounts/{accountId}/summary",
+      "method": "GET",
+      "backend": [
+        {
+          "host": [
+            "http://portfolio-svc:8201",
+            "http://portfolio-svc-2:8202"
+          ],
+          "url_pattern": "/accounts/{accountId}/summary",
+          "encoding": "json"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/wallets/{accountId}/deposits",
+      "method": "POST",
+      "backend": [
+        {
+          "host": [
+            "http://portfolio-svc:8201",
+            "http://portfolio-svc-2:8202"
+          ],
+          "url_pattern": "/wallets/{accountId}/deposits",
+          "encoding": "json"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/stocks",
+      "method": "GET",
+      "backend": [
+        {
+          "host": [
+            "http://marketdata-svc:8301",
+            "http://marketdata-svc-2:8302"
+          ],
+          "url_pattern": "/stocks",
+          "encoding": "json"
+        }
+      ],
+      "extra_config": {
+        "cache/headers": {
+          "cache_control": "public, max-age=5"
+        }
+      }
+    },
+    {
+      "endpoint": "/api/stocks/{stockId}",
+      "method": "GET",
+      "backend": [
+        {
+          "host": [
+            "http://marketdata-svc:8301",
+            "http://marketdata-svc-2:8302"
+          ],
+          "url_pattern": "/stocks/{stockId}",
+          "encoding": "json"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/reports/orders/summary",
+      "method": "GET",
+      "backend": [
+        {
+          "host": [
+            "http://reporting-svc:8401",
+            "http://reporting-svc-2:8402"
+          ],
+          "url_pattern": "/reports/orders/summary",
+          "encoding": "json"
+        }
+      ],
+      "extra_config": {
+        "qos/circuit-breaker": {
+          "name": "reporting",
+          "interval": "60s",
+          "timeout": "5s",
+          "max_failures": 5
+        }
+      }
+    }
+  ],
+  "extra_config": {
+    "telemetry/logging": {
+      "level": "INFO"
+    },
+    "security/cors": {
+      "allow_origins": ["*"],
+      "allow_methods": ["GET", "POST", "OPTIONS"],
+      "allow_headers": ["Authorization", "Content-Type"],
+      "expose_headers": ["X-RateLimit-Remaining"]
+    }
+  }
+}

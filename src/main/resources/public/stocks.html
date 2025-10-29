@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BrokerX - Stocks disponibles</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body data-page="stocks">
+    <div class="layout">
+        <header>
+            <h1>BrokerX</h1>
+            <p>Selectionnez un titre pour consulter l'information et passer un ordre.</p>
+        </header>
+
+        <section class="panel">
+            <div class="stocks-header">
+                <div class="stocks-header-actions">
+                    <button id="back-dashboard" class="secondary">Retour au tableau</button>
+                </div>
+                <h2>Stocks disponibles</h2>
+                <div class="stocks-header-actions">
+                    <button id="logout-btn" class="secondary">Deconnexion</button>
+                </div>
+            </div>
+            <div id="stocks-list" class="stocks-list">
+                <!-- Liste dynamique -->
+            </div>
+        </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/assets/app.js" type="module"></script>
+</body>
+</html>

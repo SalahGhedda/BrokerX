@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "BrokerX API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Authenticate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"secret123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/tokens",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "tokens"]
+        }
+      }
+    },
+    {
+      "name": "Account Summary",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{accountId}}/summary",
+          "host": ["{{baseUrl}}"],
+          "path": ["accounts", "{{accountId}}", "summary" ]
+        }
+      }
+    },
+    {
+      "name": "Place Limit Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"symbol\": \"AAPL\",\n  \"side\": \"BUY\",\n  \"type\": \"LIMIT\",\n  \"quantity\": 5,\n  \"limitPrice\": 150.00,\n  \"clientOrderId\": \"demo-123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{accountId}}/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["accounts", "{{accountId}}", "orders" ]
+        }
+      }
+    },
+    {
+      "name": "Cancel Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{accountId}}/orders/{{orderId}}/cancel",
+          "host": ["{{baseUrl}}"],
+          "path": ["accounts", "{{accountId}}", "orders", "{{orderId}}", "cancel" ]
+        }
+      }
+    },
+    {
+      "name": "Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{accountId}}/notifications",
+          "host": ["{{baseUrl}}"],
+          "path": ["accounts", "{{accountId}}", "notifications" ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/v1" },
+    { "key": "accountId", "value": "00000000-0000-0000-0000-000000000000" },
+    { "key": "orderId", "value": "00000000-0000-0000-0000-000000000000" },
+    { "key": "token", "value": "" }
+  ]
+}

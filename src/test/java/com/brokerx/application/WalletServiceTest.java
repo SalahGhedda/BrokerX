@@ -5,10 +5,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-import com.brokerx.adapters.external.PaymentAdapterMock;
+import com.brokerx.adapters.external.PaymentAdapterStub;
 import com.brokerx.adapters.persistence.memory.InMemoryAccountRepository;
 import com.brokerx.adapters.persistence.memory.InMemoryTransactionRepository;
 import com.brokerx.adapters.persistence.memory.InMemoryWalletRepository;
+import com.brokerx.adapters.persistence.memory.NoopTransactionManager;
 
 public class WalletServiceTest {
     @Test
@@ -16,9 +17,9 @@ public class WalletServiceTest {
         var accountRepo = new InMemoryAccountRepository();
         var walletRepo  = new InMemoryWalletRepository();
         var txRepo      = new InMemoryTransactionRepository();
-        var payment     = new PaymentAdapterMock();
+        var payment     = new PaymentAdapterStub();
 
-        var walletService = new WalletService(walletRepo, txRepo, payment);
+        var walletService = new WalletService(walletRepo, txRepo, payment, new NoopTransactionManager());
 
         UUID owner = UUID.randomUUID();
         walletRepo.create(owner);

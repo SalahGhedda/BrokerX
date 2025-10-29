@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BrokerX - Tableau de bord</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body data-page="dashboard">
+    <div class="layout">
+        <header>
+            <h1>BrokerX</h1>
+            <p>Vue globale de votre portefeuille et operations recentes.</p>
+        </header>
+
+        <section class="panel">
+            <div class="dashboard-header">
+                <div>
+                    <h2>Tableau de bord</h2>
+                    <p id="account-email">-</p>
+                </div>
+                <div class="dashboard-actions">
+                    <button id="open-stocks" class="secondary">Voir les stocks</button>
+                    <button id="logout-btn" class="secondary">Deconnexion</button>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="metric-card">
+                    <span>Solde disponible</span>
+                    <strong id="account-balance">0.00$</strong>
+                </div>
+                <div class="metric-card">
+                    <span>Identifiant compte</span>
+                    <code id="account-id">-</code>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>Dépot</h3>
+                    <p>Alimentez votre portefeuille pour initier vos ordres de marche.</p>
+                    <form id="deposit-form">
+                        <div>
+                            <label for="deposit-amount">Montant du depot ($)</label>
+                            <input id="deposit-amount" name="amount" type="number" step="0.01" min="0.01" required>
+                        </div>
+                        <button class="primary" type="submit">Déposer le montant</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Stocks suivis</h3>
+                    <p>Les stocks suivis apparaissent ici avec leur dernier prix.</p>
+                    <ul id="followed-stocks" class="activity-list">
+                        <li>
+                            <span>Aucun titre suivi pour le moment.</span>
+                            <span class="badge info">Info</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Activité recente</h3>
+                <p>Historique des opérations réalisées.</p>
+                <ul id="activity-log" class="activity-list">
+                    <li>
+                        <span>Aucune opération pour le moment.</span>
+                        <span class="badge info">Live</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/assets/app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+%%{init: {'theme': 'neutral'}}%%
+flowchart TB
+    quality[Qualité Globale]
+    maintain[Maintenabilité
+- Hexagonal
+- Ports/Adapters]
+    test[Testing / Testabilité
+- CI GitHub Actions
+- Suite unit + intégration + k6]
+    perf[Performance & Scalabilité
+- Cache quotes
+- Gateway LB]
+    sec[Sécurité / Conformité
+- Hash SHA-256
+- Tokens Bearer
+- Audit orders]
+    observ[Observabilité
+- Prometheus / Grafana
+- Logs structurés]
+    reliab[Fiabilité / Résilience
+- Idempotence dépôts/ordres
+- TransactionManager]
+
+    quality --> maintain
+    quality --> test
+    quality --> perf
+    quality --> sec
+    quality --> observ
+    quality --> reliab
+

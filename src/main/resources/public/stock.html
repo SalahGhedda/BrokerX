@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BrokerX - Detail du titre</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body data-page="stock-detail">
+    <div class="layout">
+        <header>
+            <h1>BrokerX</h1>
+            <p>Informations et passage d'ordre pour le titre selectionne.</p>
+        </header>
+
+        <section class="panel">
+            <div class="stocks-header">
+                <div class="stocks-header-actions">
+                    <button id="back-stocks" class="secondary">Retour a la liste</button>
+                </div>
+                <h2 id="stock-detail-symbol">Titre</h2>
+                <div class="stocks-header-actions">
+                    <button id="back-dashboard" class="secondary">Tableau</button>
+                    <button id="logout-btn" class="secondary">Deconnexion</button>
+                </div>
+            </div>
+            <div class="stock-detail-body">
+                <p id="stock-detail-name" class="stock-detail-name"></p>
+                <p id="stock-detail-description"></p>
+                <div class="stock-detail-meta">
+                    <div class="stock-detail-price-block">
+                        <span id="stock-detail-price" class="stock-detail-price">-</span>
+                        <span id="stock-detail-updated" class="stock-detail-updated">--:--</span>
+                    </div>
+                    <button id="stock-detail-follow" type="button" class="secondary">Suivre</button>
+                </div>
+                <div class="stock-detail-clock">
+                    Heure locale&nbsp;: <span id="stock-clock">--:--</span>
+                </div>
+                <form id="stock-order-form">
+                    <input type="hidden" id="stock-order-symbol" name="symbol">
+                    <div>
+                        <label for="stock-order-quantity">Quantite</label>
+                        <input id="stock-order-quantity" name="quantity" type="number" min="1" required>
+                    </div>
+                    <div>
+                        <label for="stock-order-type">Type d'ordre</label>
+                        <select id="stock-order-type" name="type">
+                            <option value="MARKET" selected>Marche</option>
+                            <option value="LIMIT">Limite</option>
+                        </select>
+                    </div>
+                    <div id="stock-order-price-wrapper" class="hidden">
+                        <label for="stock-order-price">Prix limite ($)</label>
+                        <input id="stock-order-price" name="price" type="number" step="0.01" min="0.01">
+                    </div>
+                    <button class="primary" type="submit">Acheter</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/assets/app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+```mermaid
+sequenceDiagram
+    participant C as Client Web / SPA
+    participant WH as WalletDepositHandler
+    participant WS as WalletService
+    participant TM as TransactionManager
+    participant TR as TransactionRepository
+    participant WR as WalletRepository
+    participant PP as PaymentPort (Stub)
+    participant M as Observabilité
+
+    C->>WH: POST /wallets/{id}/deposits {key, amount}
+    WH->>WS: deposit(accountId, key, amount)
+
+    WS->>TM: inTransaction { ... }
+    TM->>TR: findByIdempotencyKey(key)
+    alt Transaction existante
+        TR-->>TM: transaction SETTLED/FAILED
+        TM-->>WS: retourner transaction
+    else Nouvelle tentative
+        TM->>WR: findByOwnerId(accountId)
+        TM->>TR: append(Transaction PENDING)
+        TM->>PP: settle(amount)
+        alt Paiement OK
+            TM->>TR: append(Transaction SETTLED)
+            TM->>WR: credit(+amount)
+        else Paiement KO
+            TM->>TR: append(Transaction FAILED)
+        end
+        TM-->>WS: transaction finale
+    end
+
+    WS->>M: recordDeposit(state)
+    WS-->>WH: Transaction
+    WH-->>C: HTTP 201/409 ApiResponse
+```

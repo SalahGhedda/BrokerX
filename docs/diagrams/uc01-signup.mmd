@@ -1,0 +1,32 @@
+```mermaid
+sequenceDiagram
+    participant C as Client Web / SPA
+    participant AH as AccountResourceHandler
+    participant AS as AuthService
+    participant AR as AccountRepository
+    participant AAR as AccountAuditRepository
+    participant WR as WalletRepository
+    participant N as NotificationService (OTP)
+
+    C->>AH: POST /api/v1/accounts (signup)
+    AH->>AS: register(signupCommand)
+    AS->>AR: save(UserAccount PENDING)
+    AS->>WR: create(wallet)
+    AS->>AAR: append(account_created)
+    AS->>N: sendVerification(code)
+    AS-->>AH: SignupResult
+    AH-->>C: HTTP 201 SignupResponse
+
+    C->>AH: POST /api/v1/accounts/{id}/verify (code)
+    AH->>AS: confirmAccount(accountId, code)
+    AS->>AR: findById(accountId)
+    alt code valide
+        AS->>AR: update(state=ACTIVE)
+        AS->>AAR: append(account_verified)
+        AS-->>AH: success
+        AH-->>C: HTTP 200 (state=ACTIVE)
+    else code invalide
+        AS-->>AH: RestException 400/409
+        AH-->>C: HTTP 400/409
+    end
+```

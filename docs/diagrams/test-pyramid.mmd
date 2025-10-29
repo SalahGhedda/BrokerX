@@ -1,0 +1,14 @@
+%%{init: {'theme': 'neutral'}}%%
+flowchart TB
+    unit[Unit Tests
+(60% - Domaine, Services)
+    ]
+    integration[Integration Tests
+(25% - JDBC, Flow)
+    ]
+    e2e[E2E & Charge
+(15% - SPA + k6)
+    ]
+
+    unit --> integration --> e2e
+

@@ -1,34 +1,49 @@
 package com.brokerx.domain.account;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 class UserAccountTest {
 
     @Test
-    void testCreateAccount() {
-        UUID userId = UUID.randomUUID();
-        UserAccount account = new UserAccount(userId, "email@example.com", "password", AccountState.ACTIVE);
+    void activateWithValidCodeTransitionsToActive() {
+        var now = Instant.now();
+        var account = pendingAccount("123456", now.plusSeconds(3600), now);
 
-        assertEquals(userId, account.getId());
+        account.activate("123456", now.plusSeconds(10));
+
         assertEquals(AccountState.ACTIVE, account.getState());
     }
 
     @Test
-    void testDeactivateAccount() {
-        UserAccount account = new UserAccount(UUID.randomUUID(), "email@example.com", "password", AccountState.ACTIVE);
-        account.deactivate();
+    void activateWithWrongCodeFails() {
+        var now = Instant.now();
+        var account = pendingAccount("123456", now.plusSeconds(3600), now);
 
-        assertEquals(AccountState.SUSPENDED, account.getState());
+        assertThrows(IllegalArgumentException.class, () -> account.activate("000000", now));
     }
 
-    @Test
-    void testReactivateAccount() {
-        UserAccount account = new UserAccount(UUID.randomUUID(), "email@example.com", "password", AccountState.SUSPENDED);
-        account.reactivate();
-
-        assertEquals(AccountState.ACTIVE, account.getState());
+    private UserAccount pendingAccount(String code, Instant expiresAt, Instant createdAt) {
+        return new UserAccount(
+                UUID.randomUUID(),
+                "email@example.com",
+                "+15145551234",
+                "hash",
+                "Jane Doe",
+                "123 Rue Principale",
+                LocalDate.of(1990, 1, 1),
+                AccountState.PENDING,
+                code,
+                expiresAt,
+                null,
+                createdAt,
+                createdAt
+        );
     }
 }
