@@ -10,10 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.brokerx.application.MarketDataService.MarketDataSnapshot;
-import com.brokerx.application.NotificationService;
 import com.brokerx.domain.account.AccountState;
-import com.brokerx.observability.AppMetrics;
-import com.brokerx.observability.StructuredLogger;
 import com.brokerx.domain.order.OrderAuditEntry;
 import com.brokerx.domain.order.OrderSide;
 import com.brokerx.domain.order.OrderStatus;
@@ -21,6 +18,8 @@ import com.brokerx.domain.order.OrderType;
 import com.brokerx.domain.order.TradeOrder;
 import com.brokerx.domain.position.Position;
 import com.brokerx.domain.stock.Stock;
+import com.brokerx.observability.AppMetrics;
+import com.brokerx.observability.StructuredLogger;
 import com.brokerx.ports.OrderAuditRepository;
 import com.brokerx.ports.OrderRepository;
 import com.brokerx.ports.PositionRepository;
@@ -492,7 +491,7 @@ public class OrderService {
             BigDecimal upper = scaledMarket.multiply(BigDecimal.valueOf(1.5)).setScale(2, RoundingMode.HALF_UP);
             BigDecimal lower = scaledMarket.multiply(BigDecimal.valueOf(0.5)).setScale(2, RoundingMode.HALF_UP);
             if (referencePrice.compareTo(lower) < 0 || referencePrice.compareTo(upper) > 0) {
-                throw new IllegalArgumentException("Limit price doit rester dans une bande de +/-50% du marche");
+                throw new IllegalArgumentException("Limit price doit rester dans une bande de +/-50% du marché");
             }
         }
     }

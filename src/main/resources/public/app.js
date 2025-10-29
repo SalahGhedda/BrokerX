@@ -472,7 +472,7 @@ async function initDashboardPage() {
             const executedPrice = order.executedPrice != null ? currencyFormatter.format(Number(order.executedPrice)) : '--';
             const notional = order.notional != null ? currencyFormatter.format(Number(order.notional)) : '--';
             const limitPrice = order.limitPrice != null ? currencyFormatter.format(Number(order.limitPrice)) : '--';
-            const typeLabel = order.type === 'LIMIT' ? 'Limite' : 'Marche';
+            const typeLabel = order.type === 'LIMIT' ? 'Limite' : 'Marché';
             const statusText = order.status === 'COMPLETED' ? 'Termine'
                 : order.status === 'FAILED' ? 'Echec'
                 : order.status === 'CANCELLED' ? 'Annule'
